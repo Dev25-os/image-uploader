@@ -1,8 +1,16 @@
 import "./App.css";
 import banner from "./assets/images/banner.svg";
 import avatar from "./assets/images/avatar.png";
+import { useState } from "react";
+import UploadImage from "./components/uploadImage";
 
 const App = () => {
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+
+  const handleDialog = () => {
+    setOpenDialog(!openDialog);
+  };
+
   return (
     <div className="backgroundColor h-screen flex items-center justify-center px-3">
       <div className="card bg-white  md:p-0 shadow-md rounded-sm md:mx-auto w-full md:w-fit">
@@ -23,7 +31,10 @@ const App = () => {
           </div>
         </div>
         <div className="p-3 flex w-full justify-end">
-          <button className="sm:py-2 sm:px-3 py-1 px-2 text-sm sm:text-base border rounded shadow-md font-medium">
+          <button
+            className="sm:py-2 sm:px-3 py-1 px-2 text-sm sm:text-base border rounded shadow-md font-medium"
+            onClick={handleDialog}
+          >
             Update picture
           </button>
         </div>
@@ -48,6 +59,10 @@ const App = () => {
           </div>
         </div>
       </div>
+
+      {openDialog && (
+        <UploadImage openDialog={openDialog} setOpenDialog={setOpenDialog} />
+      )}
     </div>
   );
 };
