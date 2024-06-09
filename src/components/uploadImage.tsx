@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import uploadLogo from "../assets/images/upload.svg";
 import { SingleFile } from "./SingleFile";
@@ -58,6 +58,11 @@ const UploadImage = ({ openDialog, setOpenDialog }: PropType) => {
     multiple: true,
     maxFiles: 5,
   });
+
+  useEffect(() => {
+    console.log("filesfiles", files);
+  }, [files]);
+
   return (
     <div>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
@@ -97,12 +102,6 @@ const UploadImage = ({ openDialog, setOpenDialog }: PropType) => {
           {/* render files */}
           <div className="overflow-y-auto max-h-72">
             {files.map((fileWrapper: any, idx: number) => (
-              // <SingleFile
-              //   key={idx}
-              //   file={fileWrapper.file}
-              //   onDelete={onDelete}
-              //   onUpload={onUpload}
-              // />
               <div key={idx}>
                 {fileWrapper.errors.length ? (
                   <UploadError

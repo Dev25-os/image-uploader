@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import close from "../assets/images/close.svg";
 import axios from "axios";
-import { url } from "inspector";
 
 export interface SingleFileUploadWithProgressProps {
   file: File;
@@ -19,41 +18,42 @@ export const SingleFile = ({
   const [uploadedSecureUrl, setUploadedSecureUrl] = useState<string>("");
   const [serverError, setServerError] = useState("");
 
-  useEffect(() => {
-    async function upload() {
-      const url = "https://api.cloudinary.com/v1_1/demo/image/upload";
-      const key = "docs_upload_example_us_preset";
-      setLoading(true);
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", key);
+  const upload = useCallback(async () => {
+    const url = "https://api.cloudinary.com/v1_1/dwcs63bbx/image/upload";
+    const key = "j42cqbrn";
 
-      try {
-        const response = await axios.post(url, formData, {
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.lengthComputable) {
-              const percentage = Math.round(
-                (progressEvent?.loaded * 100) / progressEvent?.total
-              );
-              setProgress(percentage);
-            }
-          },
-        });
-        setLoading(false);
-        setUploadedSecureUrl(response?.data?.secure_url);
-        // return response.data.secure_url;
-      } catch (error) {
-        setLoading(false);
-        setServerError(error.code);
-      }
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", key);
+
+    try {
+      const response = await axios.post(url, formData, {
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.lengthComputable) {
+            const percentage = Math.round(
+              (progressEvent?.loaded * 100) / progressEvent?.total
+            );
+            setProgress(percentage);
+          }
+        },
+      });
+      setLoading(false);
+      setUploadedSecureUrl(response?.data?.secure_url);
+      onUpload(file, response?.data?.secure_url);
+      // return response.data.secure_url;
+    } catch (error) {
+      setLoading(false);
+      setServerError(error.code);
     }
-    upload();
-  }, []);
+  }, [file]);
 
-  console.log(uploadedSecureUrl);
+  useEffect(() => {
+    upload();
+  }, [upload]);
 
   return (
-    <div >
+    <div>
       <div className="flex  gap-2 ">
         <div className="left w-20 h-20">
           <img
