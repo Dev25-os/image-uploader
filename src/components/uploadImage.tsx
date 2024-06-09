@@ -95,7 +95,7 @@ const UploadImage = ({ openDialog, setOpenDialog }: PropType) => {
           </div>
 
           {/* render files */}
-          <div>
+          <div className="overflow-y-auto max-h-72">
             {files.map((fileWrapper: any, idx: number) => (
               // <SingleFile
               //   key={idx}
