@@ -2,7 +2,7 @@ import "./App.css";
 import banner from "./assets/images/banner.svg";
 import avatar from "./assets/images/avatar.png";
 import { useState } from "react";
-import UploadImage from "./components/uploadImage";
+import UploadImage from "./components/UploadImage";
 
 const App = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
