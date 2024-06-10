@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 
 import close from "../assets/images/close.svg";
+import cropIcon from "../assets/images/crop.svg";
+import deleteIcon from "../assets/images/delete.svg";
+
 import axios from "axios";
+import ImageCrop from "./ImageCrop";
 
 export interface SingleFileUploadWithProgressProps {
   file: File;
@@ -15,6 +19,10 @@ export const SingleFile = ({
 }: SingleFileUploadWithProgressProps) => {
   const [progress, setProgress] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const [openCrop, setOpenCrop] = useState<boolean>(false);
+  const [selectedImg, setSelectedImg] = useState<string | undefined>();
+
   const [uploadedSecureUrl, setUploadedSecureUrl] = useState<string>("");
   const [serverError, setServerError] = useState("");
 
@@ -48,6 +56,11 @@ export const SingleFile = ({
     }
   }, [file]);
 
+  const handleCrop = (file) => {
+    setSelectedImg(file);
+    setOpenCrop(true);
+  };
+
   useEffect(() => {
     upload();
   }, [upload]);
@@ -75,45 +88,57 @@ export const SingleFile = ({
             />
           </div>
           <p className="text-xs"> {(file.size / 1024).toFixed(2)} KB </p>
-          <div className="progress flex  gap-2">
-            <div className="w-full  bg-gray-200 rounded-full h-1.5 flex-row  mt-2">
-              <div
-                className=" w-full bg-blue-600 h-1.5 rounded-full "
-                style={{ width: `${progress}%` }}
-              ></div>
+          {loading && (
+            <div className="progress flex  gap-2">
+              <div className="w-full  bg-gray-200 rounded-full h-1.5 flex-row  mt-2">
+                <div
+                  className=" w-full bg-blue-600 h-1.5 rounded-full "
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-neutral-600"> {progress}%</p>
             </div>
-            <p className="text-xs text-neutral-600"> {progress}%</p>
-          </div>
+          )}
+
+          {!loading && (
+            <div className="flex gap-3 mt-2">
+              <div
+                className="top flex gap-1 cursor-pointer"
+                onClick={() => handleCrop(URL.createObjectURL(file))}
+              >
+                <img
+                  src={cropIcon}
+                  alt=""
+                  className="text-sm w-4 h-4 text-red cursor-pointer"
+                />
+                <p className="text-xs text-neutral-600">Crop</p>
+              </div>
+
+              <div className="bottom flex gap-1 cursor-pointer"
+              onClick={() => onDelete(file)}
+              >
+                <img
+                  src={deleteIcon}
+                  alt=""
+                  className="text-sm w-4 h-4 text-red cursor-pointer"
+                  
+                />
+                <p className="text-xs text-neutral-600">Delete</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* crop window */}
+      {openCrop && (
+        <ImageCrop
+          selectedImg={selectedImg}
+          setSelectedImg={setSelectedImg}
+          openCrop={openCrop}
+          setOpenCrop={setOpenCrop}
+        />
+      )}
     </div>
   );
 };
-
-// function uploadFile(file: File, onProgress: (percentage: number) => void) {
-//   const url = "https://api.cloudinary.com/v1_1/demo/image/upload";
-//   const key = "docs_upload_example_us_preset";
-
-//   return new Promise<string>((res, rej) => {
-//     const xhr = new XMLHttpRequest();
-//     xhr.open("POST", url);
-
-//     xhr.onload = () => {
-//       const resp = JSON.parse(xhr.responseText);
-//       res(resp.secure_url);
-//     };
-//     xhr.onerror = (evt) => rej(evt);
-//     xhr.upload.onprogress = (event) => {
-//       if (event.lengthComputable) {
-//         const percentage = (event.loaded / event.total) * 100;
-//         onProgress(Math.round(percentage));
-//       }
-//     };
-
-//     const formData = new FormData();
-//     formData.append("file", file);
-//     formData.append("upload_preset", key);
-
-//     xhr.send(formData);
-//   });
-// }
